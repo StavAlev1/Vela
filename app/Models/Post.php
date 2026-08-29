@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Post extends Model
@@ -49,10 +50,10 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    // A post has many comments
-    public function comments(): HasMany
+    // Replaces the old hasMany() version
+    public function comments(): MorphMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     /**
@@ -61,7 +62,7 @@ class Post extends Model
     protected function excerpt(): Attribute
     {
         return Attribute::make(
-            get: fn () => substr($this->content, 0, 100) . '...',
+            get: fn() => substr($this->content, 0, 100) . '...',
         );
     }
 
@@ -71,8 +72,13 @@ class Post extends Model
     protected function title(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => ucfirst($value), // capitalize title before saving
+            set: fn($value) => ucfirst($value), // capitalize title before saving
         );
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 
     /**
