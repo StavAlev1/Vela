@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostsController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
 
 Route::get('/', function () {
@@ -10,7 +10,7 @@ Route::get('/', function () {
 
 // Route::get('/posts', [PostsController::class, 'index']);
 
-Route::resource('/posts', PostsController::class);
+Route::resource('/posts', PostController::class);
 
 Route::get('/contact', [ContactController::class, 'index']);
 
