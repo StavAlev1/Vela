@@ -3,15 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Support\Facades\Storage;
+
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * 1. FILLABLE — which fields can be mass-assigned
@@ -39,6 +44,15 @@ class Post extends Model
     protected $attributes = [
         'is_published' => false,
     ];
+
+    protected static function booted(): void
+    {
+        static::forceDeleted(function (Post $post) {
+            if ($post->featured_image) {
+                Storage::disk('public')->delete($post->featured_image);
+            }
+        });
+    }
 
     /**
      * 5. RELATIONSHIPS
@@ -81,16 +95,33 @@ class Post extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+
+    /**
+     * Accessor — returns the full public URL for the featured image,
+     * or null if no image was uploaded.
+     */
+    protected function featuredImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->featured_image
+                ? asset('storage/' . $this->featured_image)
+                : null,
+        );
+    }
+
     /**
      * 8. QUERY SCOPES — reusable query shortcuts
      */
-    public function scopePublished($query)
-    {
-        return $query->where('is_published', true);
-    }
 
-    public function scopeByUser($query, $userId)
+    #[Scope]
+    public function byUser(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);
+    }
+
+    #[Scope]
+    public function published(Builder $query): Builder
+    {
+        return $query->where('is_published', true);
     }
 }

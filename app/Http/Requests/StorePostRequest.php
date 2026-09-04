@@ -28,6 +28,7 @@ class StorePostRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
+            'featured_image' => ['nullable', 'image', 'max:2048'], // 2MB max, must be an actual image file
         ];
     }
 

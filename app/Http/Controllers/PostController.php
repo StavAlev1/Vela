@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PostController extends Controller
@@ -38,10 +39,14 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request): RedirectResponse
     {
-        // No $this->authorize() needed here — StorePostRequest already
-        // ran PostPolicy::create() before this method executed.
+        $validated = $request->validated();
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
+
         $post = Post::create([
-            ...$request->validated(),
+            ...$validated,
             'user_id' => Auth::id(),
         ]);
 
@@ -70,9 +75,18 @@ class PostController extends Controller
 
     public function update(UpdatePostRequest $request, Post $post): RedirectResponse
     {
-        // No $this->authorize() needed here — UpdatePostRequest already
-        // ran PostPolicy::update() before this method executed.
-        $post->update($request->validated());
+        $validated = $request->validated();
+
+        if ($request->hasFile('featured_image')) {
+            // delete old image if one exists
+            if ($post->featured_image) {
+                Storage::disk('public')->delete($post->featured_image);
+            }
+
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
+
+        $post->update($validated);
 
         return redirect()
             ->route('posts.show', $post)
@@ -89,5 +103,27 @@ class PostController extends Controller
         return redirect()
             ->route('posts.index')
             ->with('success', 'Post deleted successfully.');
+    }
+
+    public function forceDestroy(Post $post): RedirectResponse
+    {
+        $this->authorize('forceDelete', $post);
+
+        $post->forceDelete(); // triggers the booted() event
+
+        return redirect()
+            ->route('posts.index')
+            ->with('success', 'Post permanently deleted.');
+    }
+
+    public function restore(Post $post): RedirectResponse
+    {
+        $this->authorize('restore', $post);
+
+        $post->restore();
+
+        return redirect()
+            ->route('posts.trashed')
+            ->with('success', 'Post restored successfully.');
     }
 }
