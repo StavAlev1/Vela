@@ -2,34 +2,47 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/posts', [PostsController::class, 'index']);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::resource('/posts', PostController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::delete('posts/{post}/force', [PostController::class, 'forceDestroy'])
-    ->name('posts.force-destroy')
-    ->withTrashed(); // allows route model binding to find soft-deleted posts too
+// Posts
+Route::resource('posts', PostController::class);
+
+Route::get('posts/trashed/list', [PostController::class, 'trashed'])
+    ->name('posts.trashed');
 
 Route::patch('posts/{post}/restore', [PostController::class, 'restore'])
     ->name('posts.restore')
     ->withTrashed();
 
-Route::get('posts/trashed/list', [PostController::class, 'trashed'])
-    ->name('posts.trashed');
+Route::delete('posts/{post}/force', [PostController::class, 'forceDestroy'])
+    ->name('posts.force-destroy')
+    ->withTrashed();
 
-// Nested under posts — comment creation always happens in the context of a specific post
+// Comments
 Route::post('posts/{post}/comments', [CommentController::class, 'store'])
     ->name('comments.store');
 
-// Flat — deletion just needs the comment itself, works for both Post and Video comments
 Route::delete('comments/{comment}', [CommentController::class, 'destroy'])
     ->name('comments.destroy');
 
-Route::get('/contact', [ContactController::class, 'index']);
+// Contact
+Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+require __DIR__.'/auth.php';

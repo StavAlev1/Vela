@@ -1,62 +1,58 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <title>@yield('title', config('app.name', 'Laravel'))</title>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100 flex flex-col">
+            @include('layouts.navigation')
 
-    @stack('styles')
-</head>
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-<body class="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 text-gray-900 flex flex-col">
+            <!-- Flash messages -->
+            <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+                @if (session('success'))
+                    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg px-4 py-3 mt-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-    {{-- Navbar --}}
-    <header class="bg-white shadow-sm">
-        <nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="text-lg font-bold text-indigo-600">
-                {{ config('app.name', 'Laravel') }}
-            </a>
-
-            {{-- <div class="flex items-center gap-6 text-sm font-medium text-gray-600">
-                <a href="{{ url('/') }}" class="hover:text-indigo-600 transition">Home</a>
-                <a href="{{ route('contact') }}" class="hover:text-indigo-600 transition">Contact</a>
-            </div> --}}
-        </nav>
-    </header>
-
-    {{-- Flash messages (global, available on every page) --}}
-    <div class="max-w-6xl mx-auto w-full px-6">
-        @if (session('success'))
-            <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg px-4 py-3 mt-4">
-                {{ session('success') }}
+                @if (session('error'))
+                    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
+                        {{ session('error') }}
+                    </div>
+                @endif
             </div>
-        @endif
 
-        @if (session('error'))
-            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
-                {{ session('error') }}
-            </div>
-        @endif
-    </div>
+            <!-- Page Content -->
+            <main class="flex-1">
+                {{ $slot }}
+            </main>
 
-    {{-- Main content --}}
-    <main class="flex-1 max-w-6xl mx-auto w-full px-6 py-10">
-        @yield('content')
-    </main>
-
-    {{-- Footer --}}
-    <footer class="bg-white border-t mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-6 text-center text-sm text-gray-500">
-            &copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }}. All rights reserved.
+            <!-- Footer -->
+            <footer class="bg-white border-t mt-auto">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-gray-500">
+                    &copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }}. All rights reserved.
+                </div>
+            </footer>
         </div>
-    </footer>
-
-    @stack('scripts')
-</body>
-
+    </body>
 </html>

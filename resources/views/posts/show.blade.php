@@ -1,13 +1,16 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight truncate">
+            {{ $post->title }}
+        </h2>
+    </x-slot>
 
-@section('title', $post->title)
-
-@section('content')
-    <div class="max-w-3xl mx-auto">
+    <div class="py-8 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <article class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
             @if ($post->featured_image_url)
-                <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="w-full h-72 object-cover">
+                <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}"
+                     class="w-full h-72 object-cover">
             @endif
 
             <div class="p-8">
@@ -24,7 +27,7 @@
 
                         @can('delete', $post)
                             <form method="POST" action="{{ route('posts.destroy', $post) }}"
-                                onsubmit="return confirm('Delete this post?')">
+                                  onsubmit="return confirm('Delete this post?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:underline">Delete</button>
@@ -33,7 +36,6 @@
                     </div>
                 </div>
 
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ $post->title }}</h1>
                 <div class="prose max-w-none text-gray-700 leading-relaxed">
                     {{ $post->content }}
                 </div>
@@ -50,27 +52,26 @@
                 <form method="POST" action="{{ route('comments.store', $post) }}" class="mb-8">
                     @csrf
                     <textarea name="body" rows="3" placeholder="Add a comment..."
-                        class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition resize-y"></textarea>
+                              class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition resize-y"></textarea>
                     @error('body')
                         <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
                     @enderror
 
                     <button type="submit"
-                        class="mt-3 px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+                            class="mt-3 px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
                         Post Comment
                     </button>
                 </form>
             @else
-                {{-- <p class="text-sm text-gray-400 mb-8">
+                <p class="text-sm text-gray-400 mb-8">
                     <a href="{{ route('login') }}" class="text-indigo-600 hover:underline">Log in</a> to leave a comment.
-                </p> --}}
+                </p>
             @endauth
 
             <div class="space-y-5">
                 @forelse ($post->comments as $comment)
                     <div class="flex gap-3 border-b border-gray-100 pb-5 last:border-0">
-                        <div
-                            class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-semibold shrink-0">
+                        <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-semibold shrink-0">
                             {{ substr($comment->user->name, 0, 1) }}
                         </div>
                         <div class="flex-1">
@@ -82,7 +83,7 @@
 
                                 @can('delete', $comment)
                                     <form method="POST" action="{{ route('comments.destroy', $comment) }}"
-                                        onsubmit="return confirm('Delete this comment?')">
+                                          onsubmit="return confirm('Delete this comment?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-xs text-red-500 hover:underline">Delete</button>
@@ -98,4 +99,4 @@
             </div>
         </div>
     </div>
-@endsection
+</x-app-layout>
