@@ -22,10 +22,10 @@
                 {{ config('app.name', 'Laravel') }}
             </a>
 
-            <div class="flex items-center gap-6 text-sm font-medium text-gray-600">
+            {{-- <div class="flex items-center gap-6 text-sm font-medium text-gray-600">
                 <a href="{{ url('/') }}" class="hover:text-indigo-600 transition">Home</a>
                 <a href="{{ route('contact') }}" class="hover:text-indigo-600 transition">Contact</a>
-            </div>
+            </div> --}}
         </nav>
     </header>
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,5 +23,13 @@ Route::patch('posts/{post}/restore', [PostController::class, 'restore'])
 
 Route::get('posts/trashed/list', [PostController::class, 'trashed'])
     ->name('posts.trashed');
+
+// Nested under posts — comment creation always happens in the context of a specific post
+Route::post('posts/{post}/comments', [CommentController::class, 'store'])
+    ->name('comments.store');
+
+// Flat — deletion just needs the comment itself, works for both Post and Video comments
+Route::delete('comments/{comment}', [CommentController::class, 'destroy'])
+    ->name('comments.destroy');
 
 Route::get('/contact', [ContactController::class, 'index']);
