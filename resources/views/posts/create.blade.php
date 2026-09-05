@@ -14,7 +14,7 @@
                     <label for="title" class="block text-sm font-semibold text-gray-700 mb-1.5">Title</label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}"
                            placeholder="Give your post a title"
-                           class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition">
+                           class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
                     @error('title')
                         <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
                     @enderror
@@ -24,7 +24,7 @@
                     <label for="content" class="block text-sm font-semibold text-gray-700 mb-1.5">Content</label>
                     <textarea id="content" name="content" rows="8"
                               placeholder="Write your post..."
-                              class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition resize-y">{{ old('content') }}</textarea>
+                              class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition resize-y">{{ old('content') }}</textarea>
                     @error('content')
                         <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
                     @enderror
@@ -33,7 +33,7 @@
                 <div>
                     <label for="featured_image" class="block text-sm font-semibold text-gray-700 mb-1.5">Featured Image</label>
                     <input type="file" id="featured_image" name="featured_image" accept="image/*"
-                           class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600 file:text-sm file:font-semibold hover:file:bg-indigo-100 transition">
+                           class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-semibold hover:file:bg-blue-100 transition">
                     @error('featured_image')
                         <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
                     @enderror
@@ -41,7 +41,7 @@
 
                 <div class="flex gap-3 pt-2">
                     <button type="submit"
-                            class="flex-1 py-3 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+                            class="flex-1 py-3 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition">
                         Publish Post
                     </button>
                     <a href="{{ route('posts.index') }}"

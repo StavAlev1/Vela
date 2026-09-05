@@ -33,6 +33,13 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $user->profile()->create([]);
+        });
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);

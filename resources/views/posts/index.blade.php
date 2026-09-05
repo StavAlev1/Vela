@@ -9,7 +9,7 @@
         <div class="flex items-center justify-end mb-8">
             @can('create', App\Models\Post::class)
                 <a href="{{ route('posts.create') }}"
-                   class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+                   class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
                     + New Post
                 </a>
             @endcan
