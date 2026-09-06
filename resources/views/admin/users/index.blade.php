@@ -33,7 +33,7 @@
                             <td class="px-6 py-4">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-semibold
                                     {{ match(true) {
-                                        $user->hasRole('admin') => 'bg-indigo-100 text-indigo-700',
+                                        $user->hasRole('admin') => 'bg-brand-100 text-brand-700',
                                         $user->hasRole('editor') => 'bg-green-100 text-green-700',
                                         default => 'bg-gray-100 text-gray-600',
                                     } }}">
@@ -62,7 +62,7 @@
                                             <form method="POST" action="{{ route('admin.users.promote', $user) }}">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="text-indigo-600 hover:underline text-sm">
+                                                <button type="submit" class="text-brand-600 hover:underline text-sm">
                                                     Promote to Editor
                                                 </button>
                                             </form>

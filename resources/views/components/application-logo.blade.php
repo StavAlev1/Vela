@@ -1,1 +1,1 @@
-<img src="{{ asset('images/vela-logo.png') }}" {{ $attributes }} alt="{{ config('app.name') }}">
+<img src="{{ asset('images/vela-logo-svg.svg') }}" {{ $attributes }} alt="{{ config('app.name') }}">

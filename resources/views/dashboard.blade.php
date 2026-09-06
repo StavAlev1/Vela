@@ -41,20 +41,20 @@
         <div class="bg-white rounded-2xl shadow-sm p-8">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-gray-800">Your Recent Posts</h3>
-                <a href="{{ route('posts.create') }}" class="text-sm text-indigo-600 hover:underline">+ New Post</a>
+                <a href="{{ route('posts.create') }}" class="text-sm text-brand-600 hover:underline">+ New Post</a>
             </div>
 
             @forelse ($recentPosts as $post)
                 <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                     <div>
                         <a href="{{ route('posts.show', $post) }}"
-                            class="font-medium text-gray-800 hover:text-indigo-600">
+                            class="font-medium text-gray-800 hover:text-brand-600">
                             {{ $post->title }}
                         </a>
                         <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
                     </div>
                     <a href="{{ route('posts.edit', $post) }}"
-                        class="text-sm text-gray-500 hover:text-indigo-600">Edit</a>
+                        class="text-sm text-gray-500 hover:text-brand-600">Edit</a>
                 </div>
             @empty
                 <p class="text-sm text-gray-400">You haven't written any posts yet.</p>
@@ -63,16 +63,16 @@
 
         {{-- Admin-only section --}}
         @if (Auth::user()->hasRole('admin'))
-            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-8">
-                <h3 class="text-lg font-bold text-indigo-900 mb-4">Admin Overview</h3>
+            <div class="bg-brand-50 border border-brand-100 rounded-2xl p-8">
+                <h3 class="text-lg font-bold text-brand-900 mb-4">Admin Overview</h3>
                 <div class="grid gap-6 sm:grid-cols-2">
                     <div>
-                        <p class="text-sm text-indigo-500 mb-1">Total Users</p>
-                        <p class="text-2xl font-bold text-indigo-900">{{ $totalUsers }}</p>
+                        <p class="text-sm text-brand-500 mb-1">Total Users</p>
+                        <p class="text-2xl font-bold text-brand-900">{{ $totalUsers }}</p>
                     </div>
                     <div>
-                        <p class="text-sm text-indigo-500 mb-1">Total Comments (site-wide)</p>
-                        <p class="text-2xl font-bold text-indigo-900">{{ $totalComments }}</p>
+                        <p class="text-sm text-brand-500 mb-1">Total Comments (site-wide)</p>
+                        <p class="text-2xl font-bold text-brand-900">{{ $totalComments }}</p>
                     </div>
                 </div>
             </div>

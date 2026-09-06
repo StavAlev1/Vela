@@ -9,6 +9,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
     return view('welcome');
 });
 
