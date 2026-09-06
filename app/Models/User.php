@@ -39,6 +39,7 @@ class User extends Authenticatable
     {
         static::created(function (User $user) {
             $user->profile()->create([]);
+            $user->assignRole('user');
         });
     }
 
@@ -50,6 +51,15 @@ class User extends Authenticatable
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Comments this user has personally written (across any post/video),
+     * via the plain user_id column on the comments table.
+     */
+    public function commentsWritten(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 
     public function commentsReceived(): Collection

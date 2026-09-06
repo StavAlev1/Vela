@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
@@ -45,5 +46,14 @@ Route::delete('comments/{comment}', [CommentController::class, 'destroy'])
 // Contact
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+// Admin
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::patch('users/{user}/promote', [UserController::class, 'promoteToEditor'])->name('users.promote');
+    Route::patch('users/{user}/demote', [UserController::class, 'demoteToUser'])->name('users.demote');
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+});
 
 require __DIR__ . '/auth.php';

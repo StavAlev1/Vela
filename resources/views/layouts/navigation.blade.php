@@ -1,4 +1,16 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+    @php
+        $navLinks = [
+            ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard'],
+            ['route' => 'posts.index', 'pattern' => 'posts.*', 'label' => 'Posts'],
+            ['route' => 'contact', 'pattern' => 'contact', 'label' => 'Contact'],
+        ];
+
+        if (auth()->user()->hasRole('admin')) {
+            $navLinks[] = ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Manage Users'];
+        }
+    @endphp
+
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -12,17 +24,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.*')">
-                        {{ __('Posts') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
-                        {{ __('Contact') }}
-                    </x-nav-link>
+                    @foreach ($navLinks as $link)
+                        <x-nav-link :href="route($link['route'])" :active="request()->routeIs($link['pattern'])">
+                            {{ __($link['label']) }}
+                        </x-nav-link>
+                    @endforeach
                 </div>
             </div>
 
@@ -34,10 +40,6 @@
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <img src="{{ Auth::user()->profile->avatar_url }}" alt="{{ Auth::user()->name }}"
                                 class="w-7 h-7 rounded-full object-cover">
-
-                            @if (!Auth::user()->profile->avatar)
-                                <div>{{ Auth::user()->name }}</div>
-                            @endif
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -88,17 +90,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.*')">
-                {{ __('Posts') }}
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')">
-                {{ __('Contact') }}
-            </x-responsive-nav-link>
+            @foreach ($navLinks as $link)
+                <x-responsive-nav-link :href="route($link['route'])" :active="request()->routeIs($link['pattern'])">
+                    {{ __($link['label']) }}
+                </x-responsive-nav-link>
+            @endforeach
         </div>
 
         <!-- Responsive Settings Options -->
