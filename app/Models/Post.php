@@ -124,4 +124,17 @@ class Post extends Model
     {
         return $query->where('is_published', true);
     }
+
+    #[Scope]
+    public function search(Builder $query, ?string $term): Builder
+    {
+        if (! $term) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+                ->orWhere('content', 'like', "%{$term}%");
+        });
+    }
 }

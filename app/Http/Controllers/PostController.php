@@ -6,23 +6,27 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        // viewAny check — since your PostPolicy allows any logged-in user,
-        // this is optional right now, but wiring it in keeps things consistent
-        // and future-proofs it if you tighten the rule later.
         $this->authorize('viewAny', Post::class);
 
         $posts = Post::with('user')
             ->withCount('comments')
+            ->search($request->query('q'))
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view('posts.partials.results', compact('posts'));
+        }
 
         return view('posts.index', compact('posts'));
     }
