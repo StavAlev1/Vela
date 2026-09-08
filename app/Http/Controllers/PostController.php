@@ -105,8 +105,10 @@ class PostController extends Controller
         $validated = $this->extractMetadata($request->validated(), $post);
 
         if ($request->hasFile('featured_image')) {
-            // delete old image if one exists
-            if ($post->featured_image) {
+            // Delete the old image if one exists on our own disk — nothing
+            // to clean up when it was an external URL (e.g. from the
+            // backfill command).
+            if ($post->featured_image && ! $post->hasExternalImage()) {
                 Storage::disk('public')->delete($post->featured_image);
             }
 
@@ -143,6 +145,14 @@ class PostController extends Controller
         $this->authorize('forceDelete', $post);
 
         $title = $post->title;
+
+        // Comments are linked via a polymorphic relation (no real foreign
+        // key possible there), so nothing at the database level would clean
+        // them up on its own — delete them explicitly before the post is
+        // gone, the same way Admin\UserController::destroy() already does
+        // for a deleted user's posts. (See also: comments:prune-orphaned,
+        // for any orphans left over from before this fix.)
+        $post->comments()->delete();
 
         $post->forceDelete(); // triggers the booted() event
 
