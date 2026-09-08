@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Dashboard">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
@@ -63,18 +63,70 @@
 
         {{-- Admin-only section --}}
         @if (Auth::user()->hasRole('admin'))
-            <div class="bg-brand-50 border border-brand-100 rounded-2xl p-8">
-                <h3 class="text-lg font-bold text-brand-900 mb-4">Admin Overview</h3>
-                <div class="grid gap-6 sm:grid-cols-2">
-                    <div>
-                        <p class="text-sm text-brand-500 mb-1">Total Users</p>
-                        <p class="text-2xl font-bold text-brand-900">{{ $totalUsers }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-brand-500 mb-1">Total Comments (site-wide)</p>
-                        <p class="text-2xl font-bold text-brand-900">{{ $totalComments }}</p>
+            <div class="bg-brand-50 border border-brand-100 rounded-2xl p-8 space-y-8">
+                <div>
+                    <h3 class="text-lg font-bold text-brand-900 mb-4">Admin Overview</h3>
+                    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <p class="text-sm text-brand-500 mb-1">Total Users</p>
+                            <p class="text-2xl font-bold text-brand-900">{{ $totalUsers }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-brand-500 mb-1">Total Comments (site-wide)</p>
+                            <p class="text-2xl font-bold text-brand-900">{{ $totalComments }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-brand-500 mb-1">Categories</p>
+                            <p class="text-2xl font-bold text-brand-900">{{ $totalCategories }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-brand-500 mb-1">Published / Draft</p>
+                            <p class="text-2xl font-bold text-brand-900">{{ $publishedCount }} / {{ $draftCount }}</p>
+                        </div>
                     </div>
                 </div>
+
+                <div class="grid gap-8 lg:grid-cols-2">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-bold text-brand-900">Most Viewed Posts</h4>
+                        </div>
+                        <div class="bg-white rounded-xl divide-y divide-gray-100">
+                            @forelse ($mostViewedPosts as $post)
+                                <a href="{{ route('posts.show', $post) }}"
+                                    class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                                    <span class="text-sm text-gray-700 truncate pr-3">{{ $post->title }}</span>
+                                    <span class="text-xs text-gray-400 shrink-0">👁 {{ $post->views }}</span>
+                                </a>
+                            @empty
+                                <p class="px-4 py-6 text-sm text-gray-400 text-center">No views recorded yet.</p>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-bold text-brand-900">Recent Signups</h4>
+                            <a href="{{ route('admin.users.index') }}" class="text-xs text-brand-600 hover:underline">
+                                View all
+                            </a>
+                        </div>
+                        <div class="bg-white rounded-xl divide-y divide-gray-100">
+                            @forelse ($recentSignups as $signup)
+                                <div class="flex items-center justify-between px-4 py-3">
+                                    <span class="text-sm text-gray-700 truncate pr-3">{{ $signup->name }}</span>
+                                    <span class="text-xs text-gray-400 shrink-0">{{ $signup->created_at->diffForHumans() }}</span>
+                                </div>
+                            @empty
+                                <p class="px-4 py-6 text-sm text-gray-400 text-center">No signups yet.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.activity.index') }}" class="text-sm text-brand-600 hover:underline">
+                    View full activity log →
+                </a>
             </div>
         @endif
 

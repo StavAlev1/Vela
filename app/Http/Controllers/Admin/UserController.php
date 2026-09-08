@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,8 @@ class UserController extends Controller
 
         $user->syncRoles(['editor']); // replaces 'user' role with 'editor'
 
+        ActivityLog::record('user.promoted', "Promoted {$user->name} to editor.", $user);
+
         return back()->with('success', "{$user->name} is now an editor.");
     }
 
@@ -36,12 +39,16 @@ class UserController extends Controller
 
         $user->syncRoles(['user']);
 
+        ActivityLog::record('user.demoted', "Demoted {$user->name} to regular user.", $user);
+
         return back()->with('success', "{$user->name} is now a regular user.");
     }
 
     public function destroy(User $user): RedirectResponse
     {
         $this->authorize('delete', $user);
+
+        $name = $user->name;
 
         DB::transaction(function () use ($user) {
             // Delete each post properly through Eloquent, so model events
@@ -68,8 +75,10 @@ class UserController extends Controller
             $user->delete();
         });
 
+        ActivityLog::record('user.deleted', "Deleted {$name} and all their content.");
+
         return redirect()
             ->route('admin.users.index')
-            ->with('success', "{$user->name} and all their content have been deleted.");
+            ->with('success', "{$name} and all their content have been deleted.");
     }
 }

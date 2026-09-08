@@ -5,7 +5,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" type="image/png" href="{{ asset('images/vela-icon.png') }}">
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+
+        <!-- SEO / Open Graph -->
+        @php
+            $metaDescription = $description ?? 'Vela — write, tag, and share your posts.';
+        @endphp
+        <meta name="description" content="{{ $metaDescription }}">
+        <meta property="og:site_name" content="{{ config('app.name', 'Laravel') }}">
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="{{ $title ?? config('app.name', 'Laravel') }}">
+        <meta property="og:description" content="{{ $metaDescription }}">
+        <meta property="og:url" content="{{ url()->current() }}">
+        @isset($ogImage)
+            <meta property="og:image" content="{{ $ogImage }}">
+        @endisset
+        <meta name="twitter:card" content="{{ isset($ogImage) ? 'summary_large_image' : 'summary' }}">
+
+        <!-- Feeds -->
+        <link rel="alternate" type="application/rss+xml" title="{{ config('app.name', 'Laravel') }} Feed" href="{{ route('feed') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

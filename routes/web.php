@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SitemapController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -15,6 +19,10 @@ Route::get('/', function () {
 
     return view('welcome');
 });
+
+// SEO / syndication — public, unauthenticated
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/feed', [FeedController::class, 'index'])->name('feed');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -58,6 +66,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('users/{user}/demote', [UserController::class, 'demoteToUser'])->name('users.demote');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+    Route::resource('categories', CategoryController::class)->except(['show']);
+
+    Route::get('activity', [ActivityLogController::class, 'index'])->name('activity.index');
 });
 
 require __DIR__ . '/auth.php';

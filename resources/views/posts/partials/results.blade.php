@@ -22,6 +22,12 @@
                 @endif
 
                 <div class="p-5">
+                    @if ($post->category)
+                        <span class="inline-block mb-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600">
+                            {{ $post->category->name }}
+                        </span>
+                    @endif
+
                     <h2 class="font-semibold text-gray-800 text-lg mb-1.5 line-clamp-1">
                         {{ $post->title }}
                     </h2>
@@ -31,7 +37,10 @@
 
                     <div class="flex items-center justify-between text-xs text-gray-400">
                         <span>{{ $post->user->name }}</span>
-                        <span class="flex items-center gap-1">💬 {{ $post->comments_count }}</span>
+                        <span class="flex items-center gap-3">
+                            <span class="flex items-center gap-1">👁 {{ $post->views }}</span>
+                            <span class="flex items-center gap-1">💬 {{ $post->comments_count }}</span>
+                        </span>
                     </div>
                 </div>
             </a>

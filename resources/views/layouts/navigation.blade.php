@@ -8,6 +8,8 @@
 
         if (auth()->user()->hasRole('admin')) {
             $navLinks[] = ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Manage Users'];
+            $navLinks[] = ['route' => 'admin.categories.index', 'pattern' => 'admin.categories.*', 'label' => 'Categories'];
+            $navLinks[] = ['route' => 'admin.activity.index', 'pattern' => 'admin.activity.*', 'label' => 'Activity'];
         }
     @endphp
 

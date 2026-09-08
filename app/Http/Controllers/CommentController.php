@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
+use App\Models\ActivityLog;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
@@ -38,6 +39,18 @@ class CommentController extends Controller
         $redirectRoute = $comment->commentable instanceof Post
             ? route('posts.show', $comment->commentable)
             : route('videos.show', $comment->commentable);
+
+        // Log it as moderation whenever someone other than the comment's own
+        // author removes it (an admin/editor cleaning up someone else's comment).
+        // Only Posts are commentable in practice today, so keep this scoped
+        // to that case rather than assuming Video also has a ->title.
+        if ($comment->user_id !== Auth::id() && $comment->commentable instanceof Post) {
+            ActivityLog::record(
+                'comment.moderated',
+                "Removed a comment by {$comment->user->name} on \"{$comment->commentable->title}\".",
+                $comment->commentable,
+            );
+        }
 
         $comment->delete();
 

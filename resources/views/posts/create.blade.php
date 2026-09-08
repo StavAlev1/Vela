@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Create a New Post">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Create a New Post
@@ -21,6 +21,22 @@
                 </div>
 
                 <div>
+                    <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-1.5">Category</label>
+                    <select id="category_id" name="category_id"
+                            class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition">
+                        <option value="">Uncategorized</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="content" class="block text-sm font-semibold text-gray-700 mb-1.5">Content</label>
                     <textarea id="content" name="content" rows="8"
                               placeholder="Write your post..."
@@ -38,6 +54,37 @@
                         <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
                     @enderror
                 </div>
+
+                <details class="group border border-gray-200 rounded-lg">
+                    <summary class="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-gray-700">
+                        SEO settings <span class="text-gray-400 font-normal">(optional)</span>
+                    </summary>
+                    <div class="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
+                        <div>
+                            <label for="meta_title" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                SEO title
+                            </label>
+                            <input type="text" id="meta_title" name="meta_title" value="{{ old('meta_title') }}"
+                                   placeholder="Defaults to the post title"
+                                   class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition">
+                            @error('meta_title')
+                                <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="meta_description" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                                SEO description
+                            </label>
+                            <textarea id="meta_description" name="meta_description" rows="2" maxlength="255"
+                                      placeholder="Defaults to an excerpt of the content"
+                                      class="w-full px-3.5 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition resize-y">{{ old('meta_description') }}</textarea>
+                            @error('meta_description')
+                                <span class="block text-red-500 text-xs mt-1.5">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </details>
 
                 <div class="flex gap-3 pt-2">
                     <button type="submit"

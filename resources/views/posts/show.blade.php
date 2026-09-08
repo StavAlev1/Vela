@@ -1,4 +1,5 @@
-<x-app-layout>
+<x-app-layout :title="$post->meta_title . ' · ' . config('app.name', 'Vela')" :description="$post->meta_description"
+    :og-image="$post->featured_image_url">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight truncate">
             {{ $post->title }}
@@ -15,9 +16,17 @@
 
             <div class="p-8">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="text-sm text-gray-400">
-                        By <span class="font-medium text-gray-600">{{ $post->user->name }}</span>
-                        · {{ $post->created_at->diffForHumans() }}
+                    <div class="text-sm text-gray-400 flex items-center gap-2 flex-wrap">
+                        @if ($post->category)
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600">
+                                {{ $post->category->name }}
+                            </span>
+                        @endif
+                        <span>
+                            By <span class="font-medium text-gray-600">{{ $post->user->name }}</span>
+                            · {{ $post->created_at->diffForHumans() }}
+                            · 👁 {{ $post->views }} {{ Str::plural('view', $post->views) }}
+                        </span>
                     </div>
 
                     <div class="flex gap-3 text-sm">

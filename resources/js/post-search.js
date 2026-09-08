@@ -1,8 +1,9 @@
 // This function builds the "state + behavior" object that Alpine will use.
-// It takes two starting values from Blade:
+// It takes starting values from Blade:
 //   - initialQuery: whatever was typed in the search box before (e.g. from the URL ?q=...)
 //   - indexUrl: the base URL for the posts page (route('posts.index'))
-export default function postSearch(initialQuery, indexUrl) {
+//   - initialCategory: whatever category was selected before (e.g. from ?category=...)
+export default function postSearch(initialQuery, indexUrl, initialCategory = '') {
 
     // Alpine expects x-data to receive an OBJECT — so we return one here.
     // Everything inside this object is either a piece of state (a variable)
@@ -13,19 +14,24 @@ export default function postSearch(initialQuery, indexUrl) {
         // x-model="q" in the Blade file keeps this in sync with the <input> automatically.
         q: initialQuery,
 
+        // "category" holds the currently selected category id ('' = all categories).
+        // x-model="category" on the <select> keeps this in sync automatically.
+        category: initialCategory,
+
         // "loading" tracks whether a fetch request is currently in progress.
         // x-show="loading" in the Blade file uses this to show/hide the "Searching…" text.
         loading: false,
 
         // Alpine automatically calls init() once, as soon as this component loads.
-        // We use it to set up a "watcher" — code that runs whenever "q" changes.
+        // We use it to set up "watchers" — code that runs whenever "q" or "category" changes.
         init() {
             // $watch('q', callback) tells Alpine: "every time q changes, run this function"
             // In our case, whenever the user types something new, re-run search().
             this.$watch('q', () => this.search());
+            this.$watch('category', () => this.search());
         },
 
-        // Runs a fresh search based on whatever is currently in "q".
+        // Runs a fresh search based on whatever is currently in "q" and "category".
         search() {
             // Show the "Searching…" indicator while we wait for the server.
             this.loading = true;
@@ -40,7 +46,12 @@ export default function postSearch(initialQuery, indexUrl) {
                 url.searchParams.set('q', this.q);
             }
 
-            // Now that we have the correct URL (with or without ?q=...),
+            // Same idea for the category filter: ?category=whatever
+            if (this.category) {
+                url.searchParams.set('category', this.category);
+            }
+
+            // Now that we have the correct URL (with or without ?q=... / ?category=...),
             // hand off to fetchAndSwap() to actually go get the new results.
             this.fetchAndSwap(url);
         },
