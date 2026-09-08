@@ -26,7 +26,7 @@ class PostController extends Controller
                 $query->where('category_id', $request->query('category'));
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(12)
             ->withQueryString();
 
         $categories = Category::orderBy('name')->get();

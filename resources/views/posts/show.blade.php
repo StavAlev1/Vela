@@ -45,7 +45,12 @@
                     </div>
                 </div>
 
-                <div class="prose max-w-none text-gray-700 leading-relaxed">
+                {{-- whitespace-pre-line preserves the paragraph breaks the author typed
+                     (plain <textarea> input, so line breaks are just \n — without this,
+                     browsers collapse them and multi-paragraph posts read as one block).
+                     Note: "prose" (Tailwind Typography) isn't installed in this project,
+                     so it was previously a no-op class here — removed rather than left dead. --}}
+                <div class="max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
                     {{ $post->content }}
                 </div>
             </div>
@@ -99,7 +104,7 @@
                                     </form>
                                 @endcan
                             </div>
-                            <p class="text-sm text-gray-600">{{ $comment->body }}</p>
+                            <p class="text-sm text-gray-600 whitespace-pre-line">{{ $comment->body }}</p>
                         </div>
                     </div>
                 @empty

@@ -16,8 +16,13 @@
                     <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}"
                         class="w-full h-44 object-cover group-hover:opacity-90 transition">
                 @else
-                    <div class="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-300">
-                        No image
+                    <div class="w-full h-44 bg-gray-50 flex flex-col items-center justify-center gap-1.5 text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z" />
+                            <circle cx="9" cy="9" r="1.5" />
+                        </svg>
+                        <span class="text-xs">No image</span>
                     </div>
                 @endif
 
