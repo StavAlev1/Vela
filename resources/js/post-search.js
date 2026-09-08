@@ -58,6 +58,14 @@ export default function postSearch(initialQuery, indexUrl, initialCategory = '')
 
         // Runs when a pagination link (e.g. "Next Page") is clicked.
         // "event" is the click event automatically passed in by Alpine's @click="paginate($event)"
+        //
+        // This listener is attached to the whole #posts-results container
+        // (so it keeps working after AJAX swaps replace its contents), but
+        // that container also holds the post card links — those should
+        // navigate normally, not get hijacked into an AJAX swap. So this
+        // only acts when the click actually landed inside Laravel's
+        // pagination nav (role="navigation"), which is what the default
+        // pagination view wraps its links in.
         paginate(event) {
             // The user might click directly on the <a> tag, or on something inside it
             // (like an icon). closest('a') walks up the DOM to find the actual link element.
@@ -66,6 +74,10 @@ export default function postSearch(initialQuery, indexUrl, initialCategory = '')
             // Safety check: if for some reason there's no actual link
             // (e.g. they clicked empty space in the container), do nothing.
             if (!link) return;
+
+            // Not a pagination link (e.g. a post card) — let the browser
+            // handle it as a normal navigation instead of intercepting it.
+            if (!link.closest('nav[role="navigation"]')) return;
 
             // Stop the browser's default behavior, which would normally be
             // "follow this link and reload the whole page." We don't want that —
