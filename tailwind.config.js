@@ -1,32 +1,8 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
-
-/** @type {import('tailwindcss').Config} */
-export default {
-    content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
-    ],
-
-    theme: {
-        extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-            },
-            colors: {
-                brand: {
-                    50: '#EDF6F6',
-                    100: '#D3E9E8',
-                    300: '#8FC4C0',
-                    500: '#2C7A73',
-                    600: '#1F6158',
-                    700: '#174A44',
-                    900: '#0C2825',
-                },
-            },
-        },
-    },
-
-    plugins: [forms],
-};
+// No longer needed — Tailwind v4 moved config into CSS itself. Everything
+// this file used to define (the brand color palette, the Figtree font
+// stack, and the extra vendor content path for Laravel's pagination
+// view) now lives in resources/css/app.css via `@theme` and `@source`.
+// Nothing references this file anymore; it's safe to delete. Left as a
+// harmless empty config in the meantime since this tool can't delete
+// files on your machine directly.
+export default {};
