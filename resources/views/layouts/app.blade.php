@@ -31,6 +31,24 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Disables a form's submit button(s) the instant it's submitted, so
+             a fast double-click can't fire the same POST twice (e.g. clicking
+             "Save Post" twice used to create the same post twice). Plain
+             inline script rather than part of the Vite bundle — it's small
+             enough that it isn't worth a build step, and this way it takes
+             effect immediately on every page, with nothing to compile. -->
+        <script>
+            document.addEventListener('submit', (event) => {
+                // A form's own onsubmit="return confirm(...)" (Delete/Restore/
+                // Force-delete forms) runs before this, so if the user clicked
+                // Cancel the event is already prevented — leave that button
+                // alone, otherwise Cancel would permanently lock it out.
+                if (event.defaultPrevented) return;
+
+                event.submitter?.setAttribute('disabled', '');
+            });
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 flex flex-col">
