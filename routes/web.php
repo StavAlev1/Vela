@@ -35,7 +35,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // Posts
-Route::resource('posts', PostController::class);
+// ->withTrashed(['show']) lets the trashed-posts page link straight to a
+// deleted post's normal show page (read-only there — see PostController)
+// instead of needing a separate preview view.
+Route::resource('posts', PostController::class)->withTrashed(['show']);
 
 Route::get('posts/trashed/list', [PostController::class, 'trashed'])
     ->name('posts.trashed');

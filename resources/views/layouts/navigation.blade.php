@@ -3,6 +3,7 @@
         $navLinks = [
             ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard'],
             ['route' => 'posts.index', 'pattern' => 'posts.*', 'label' => 'Posts'],
+            ['route' => 'posts.trashed', 'pattern' => 'posts.trashed', 'label' => 'Trash'],
             ['route' => 'contact', 'pattern' => 'contact', 'label' => 'Contact'],
         ];
 

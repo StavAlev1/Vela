@@ -38,6 +38,24 @@ class PostController extends Controller
         return view('posts.index', compact('posts', 'categories'));
     }
 
+    /**
+     * List soft-deleted posts. Anyone can look (same viewAny policy as the
+     * regular index) — the trashed.blade.php view itself decides, per row,
+     * who actually gets the Restore / Delete Permanently buttons, via the
+     * "restore" / "forceDelete" policy checks (see PostPolicy).
+     */
+    public function trashed(): View
+    {
+        $this->authorize('viewAny', Post::class);
+
+        $posts = Post::onlyTrashed()
+            ->with(['user', 'category'])
+            ->latest('deleted_at')
+            ->paginate(12);
+
+        return view('posts.trashed', compact('posts'));
+    }
+
     public function create(): View
     {
         // create() is already checked inside StorePostRequest::authorize(),
@@ -76,14 +94,20 @@ class PostController extends Controller
 
         $post->load(['comments.user', 'user', 'category']);
 
-        // Count each visitor once per browser session rather than once per
-        // page load, so refreshing the page doesn't inflate the count.
-        $viewed = session()->get('viewed_posts', []);
+        // Skip the view count (and don't touch the session) for a
+        // trashed post reached from the Trash page — that's someone
+        // checking what they're about to restore/delete, not a real
+        // read, and the post shouldn't rack up views while it's deleted.
+        if (! $post->trashed()) {
+            // Count each visitor once per browser session rather than once
+            // per page load, so refreshing the page doesn't inflate the count.
+            $viewed = session()->get('viewed_posts', []);
 
-        if (! in_array($post->id, $viewed, true)) {
-            $post->increment('views');
-            $viewed[] = $post->id;
-            session()->put('viewed_posts', $viewed);
+            if (! in_array($post->id, $viewed, true)) {
+                $post->increment('views');
+                $viewed[] = $post->id;
+                session()->put('viewed_posts', $viewed);
+            }
         }
 
         return view('posts.show', compact('post'));
@@ -159,7 +183,7 @@ class PostController extends Controller
         ActivityLog::record('post.force_deleted', "Permanently deleted post \"{$title}\".");
 
         return redirect()
-            ->route('posts.index')
+            ->route('posts.trashed')
             ->with('success', 'Post permanently deleted.');
     }
 

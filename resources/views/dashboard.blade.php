@@ -41,7 +41,9 @@
         <div class="bg-white rounded-2xl shadow-sm p-8">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-gray-800">Your Recent Posts</h3>
-                <a href="{{ route('posts.create') }}" class="text-sm text-brand-600 hover:underline">+ New Post</a>
+                @can('create', \App\Models\Post::class)
+                    <a href="{{ route('posts.create') }}" class="text-sm text-brand-600 hover:underline">+ New Post</a>
+                @endcan
             </div>
 
             @forelse ($recentPosts as $post)
