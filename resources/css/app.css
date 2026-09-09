@@ -40,6 +40,23 @@
         outline-offset: 2px;
         border-radius: 2px;
     }
+
+    /* Tailwind stopped giving buttons a pointer cursor by default a few
+       major versions back (it now matches the browser's own default,
+       which is a plain arrow) — every <button> in this app has been
+       showing that arrow cursor ever since. This brings the hand cursor
+       back for anything actually clickable: buttons, anything acting as
+       one (role="button"), dropdowns, and labels wrapping a checkbox/radio
+       (like the "Publish immediately" toggle on the post form) — skipping
+       disabled buttons, since those shouldn't invite a click at all. <a>
+       tags already get this from the browser by default. */
+    button:not(:disabled),
+    [role='button']:not(:disabled),
+    select:not(:disabled),
+    label:has(> input[type='checkbox']),
+    label:has(> input[type='radio']) {
+        cursor: pointer;
+    }
 }
 
 @layer components {
