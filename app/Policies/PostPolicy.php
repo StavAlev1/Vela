@@ -12,9 +12,14 @@ class PostPolicy
         return true; // anyone can browse posts
     }
 
+    /**
+     * A published post is visible to anyone; an unpublished draft is only
+     * visible to its own author or an admin (so a draft link can't just be
+     * shared/guessed at while it's still being worked on).
+     */
     public function view(User $user, Post $post): bool
     {
-        return true; // anyone can view a post
+        return $post->is_published || $user->id === $post->user_id || $user->hasRole('admin');
     }
 
     /**

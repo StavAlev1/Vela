@@ -25,6 +25,14 @@ class PostController extends Controller
             ->when($request->filled('category'), function ($query) use ($request) {
                 $query->where('category_id', $request->query('category'));
             })
+            // Drafts are only visible to their own author, or to an admin
+            // (who can review everyone's) — everyone else only sees
+            // published posts. Matches PostPolicy::view() for a single post.
+            ->when(! $request->user()->hasRole('admin'), function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->published()->orWhere('user_id', $request->user()->id);
+                });
+            })
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -72,6 +80,11 @@ class PostController extends Controller
     {
         $validated = $this->extractMetadata($request->validated());
 
+        // An unchecked checkbox simply isn't sent by the browser at all, so
+        // request->boolean() (rather than trusting whatever validated()
+        // happened to contain) is what correctly turns "absent" into false.
+        $validated['is_published'] = $request->boolean('is_published');
+
         if ($request->hasFile('featured_image')) {
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
         }
@@ -94,11 +107,10 @@ class PostController extends Controller
 
         $post->load(['comments.user', 'user', 'category']);
 
-        // Skip the view count (and don't touch the session) for a
-        // trashed post reached from the Trash page — that's someone
-        // checking what they're about to restore/delete, not a real
-        // read, and the post shouldn't rack up views while it's deleted.
-        if (! $post->trashed()) {
+        // Skip the view count (and don't touch the session) for a trashed
+        // post reached from the Trash page, or a draft only its author/an
+        // admin can even see yet — neither is a real public read.
+        if (! $post->trashed() && $post->is_published) {
             // Count each visitor once per browser session rather than once
             // per page load, so refreshing the page doesn't inflate the count.
             $viewed = session()->get('viewed_posts', []);
@@ -127,6 +139,7 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post): RedirectResponse
     {
         $validated = $this->extractMetadata($request->validated(), $post);
+        $validated['is_published'] = $request->boolean('is_published');
 
         if ($request->hasFile('featured_image')) {
             // Delete the old image if one exists on our own disk — nothing

@@ -26,6 +26,18 @@
                     <a href="{{ route('posts.trashed') }}" class="text-amber-700 hover:underline">Back to Trash</a>
                 </div>
             </div>
+        @elseif (! $post->is_published)
+            <div class="mb-6 flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5 text-sm">
+                <span class="text-amber-700">
+                    This post is a draft — only you and admins can see it. It won't be public until it's published.
+                </span>
+
+                @can('update', $post)
+                    <a href="{{ route('posts.edit', $post) }}" class="text-brand-600 hover:underline font-medium shrink-0">
+                        Publish it
+                    </a>
+                @endcan
+            </div>
         @endif
 
         <article class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">

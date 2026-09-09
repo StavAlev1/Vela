@@ -22,7 +22,7 @@ class Post extends Model
     /**
      * 1. FILLABLE — which fields can be mass-assigned
      */
-    protected $fillable = ['title', 'slug', 'content', 'user_id', 'category_id', 'metadata', 'featured_image'];
+    protected $fillable = ['title', 'slug', 'content', 'user_id', 'category_id', 'metadata', 'featured_image', 'is_published'];
 
     /**
      * 2. HIDDEN — fields excluded when the model is converted to JSON/array
@@ -86,6 +86,14 @@ class Post extends Model
                 }
 
                 $post->slug = $slug;
+            }
+
+            // Stamp the original publish date the first time this post goes
+            // live, and only then — editing a published post afterwards, or
+            // unpublishing and republishing it later, shouldn't move its
+            // "published" date around.
+            if ($post->is_published && empty($post->published_at)) {
+                $post->published_at = now();
             }
         });
     }

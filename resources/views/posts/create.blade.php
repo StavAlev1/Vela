@@ -86,10 +86,18 @@
                     </div>
                 </details>
 
+                <label class="flex items-center gap-2.5 text-sm text-gray-700 select-none">
+                    <input type="hidden" name="is_published" value="0">
+                    <input type="checkbox" name="is_published" value="1" @checked(old('is_published', true))
+                           class="rounded border-gray-300 text-brand-600 focus:ring-brand-400">
+                    Publish Now
+                    <span class="text-gray-400">— leave unchecked to save as a draft only you (and admins) can see.</span>
+                </label>
+
                 <div class="flex gap-3 pt-2">
                     <button type="submit"
                             class="flex-1 py-3 bg-brand-600 text-white text-sm font-semibold rounded-lg hover:bg-brand-700 transition">
-                        Publish Post
+                        Save Post
                     </button>
                     <a href="{{ route('posts.index') }}"
                        class="px-6 py-3 border border-gray-300 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 transition">

@@ -18,7 +18,9 @@ class DashboardController extends Controller
         $data = [
             'postCount' => $user->posts()->count(),
             'commentCount' => $user->commentsReceived()->count(),
-            'totalPosts' => Post::count(),
+            // ->query() first — see the comment in SitemapController for why
+            // Post::published() can't be called directly on the class.
+            'totalPosts' => Post::query()->published()->count(), // "Total Site Posts" is shown to every user, so only count what they could actually go read
             'recentPosts' => $user->posts()->latest()->take(5)->get(),
         ];
 

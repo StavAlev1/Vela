@@ -27,6 +27,12 @@
                 @endif
 
                 <div class="p-5">
+                    @unless ($post->is_published)
+                        <span class="inline-block mb-2 mr-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+                            Draft
+                        </span>
+                    @endunless
+
                     @if ($post->category)
                         <span class="inline-block mb-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600">
                             {{ $post->category->name }}
