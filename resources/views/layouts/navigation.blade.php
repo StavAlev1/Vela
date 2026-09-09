@@ -1,16 +1,20 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     @php
+        // "pattern" is always an array (spread into routeIs() below) so
+        // Posts and Trash can each claim their own exact set of routes —
+        // otherwise "posts.*" for Posts would also match posts.trashed and
+        // both links would light up together while browsing the trash.
         $navLinks = [
-            ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard'],
-            ['route' => 'posts.index', 'pattern' => 'posts.*', 'label' => 'Posts'],
-            ['route' => 'posts.trashed', 'pattern' => 'posts.trashed', 'label' => 'Trash'],
-            ['route' => 'contact', 'pattern' => 'contact', 'label' => 'Contact'],
+            ['route' => 'dashboard', 'pattern' => ['dashboard'], 'label' => 'Dashboard'],
+            ['route' => 'posts.index', 'pattern' => ['posts.index', 'posts.create', 'posts.store', 'posts.show', 'posts.edit', 'posts.update', 'posts.destroy'], 'label' => 'Posts'],
+            ['route' => 'posts.trashed', 'pattern' => ['posts.trashed', 'posts.restore', 'posts.force-destroy'], 'label' => 'Trash'],
+            ['route' => 'contact', 'pattern' => ['contact', 'contact.submit'], 'label' => 'Contact'],
         ];
 
         if (auth()->user()->hasRole('admin')) {
-            $navLinks[] = ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Manage Users'];
-            $navLinks[] = ['route' => 'admin.categories.index', 'pattern' => 'admin.categories.*', 'label' => 'Categories'];
-            $navLinks[] = ['route' => 'admin.activity.index', 'pattern' => 'admin.activity.*', 'label' => 'Activity'];
+            $navLinks[] = ['route' => 'admin.users.index', 'pattern' => ['admin.users.*'], 'label' => 'Manage Users'];
+            $navLinks[] = ['route' => 'admin.categories.index', 'pattern' => ['admin.categories.*'], 'label' => 'Categories'];
+            $navLinks[] = ['route' => 'admin.activity.index', 'pattern' => ['admin.activity.*'], 'label' => 'Activity'];
         }
     @endphp
 
@@ -28,7 +32,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @foreach ($navLinks as $link)
-                        <x-nav-link :href="route($link['route'])" :active="request()->routeIs($link['pattern'])">
+                        <x-nav-link :href="route($link['route'])" :active="request()->routeIs(...$link['pattern'])">
                             {{ __($link['label']) }}
                         </x-nav-link>
                     @endforeach
@@ -94,7 +98,7 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @foreach ($navLinks as $link)
-                <x-responsive-nav-link :href="route($link['route'])" :active="request()->routeIs($link['pattern'])">
+                <x-responsive-nav-link :href="route($link['route'])" :active="request()->routeIs(...$link['pattern'])">
                     {{ __($link['label']) }}
                 </x-responsive-nav-link>
             @endforeach
