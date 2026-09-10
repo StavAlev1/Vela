@@ -1,58 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vela
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Vela is a small custom CMS built on Laravel — a blog-style platform where **admins**, **editors**, and regular **users** each get a different level of access to write, moderate, and manage content.
 
-## About Laravel
+## Tech stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel 13** on **PHP 8.4**, SQLite by default (any Laravel-supported database works)
+- **Laravel Breeze** for authentication, **spatie/laravel-permission** for roles
+- **Tailwind CSS v4** (`@tailwindcss/vite`, config lives in `resources/css/app.css`) + **Alpine.js**, bundled with **Vite**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Content**
+- Posts with categories, an optional featured image (either a real upload or an external URL), full-text-ish search, and pagination
+- A draft/publish workflow — a post isn't public until it's published, and only its author or an admin can preview a draft
+- Threaded comments on posts (built on a polymorphic relation, so other content types can reuse it later)
+- View counts, de-duplicated per browser session rather than per page load
+- Soft-deleted posts land in a Trash view everyone can see, but only the post's owner or an admin can restore, and only an admin can permanently delete
 
-## Learning Laravel
+**Discovery & SEO**
+- Per-post SEO title/description (falls back sensibly to the post's own title/content when not set), Open Graph tags
+- `/sitemap.xml` and `/feed` (RSS) — both only ever include published posts
+- Human-readable slugs, auto-generated from the title and guaranteed unique
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Admin & moderation**
+- Three roles: **admin** (full control), **editor** (can write and publish), **user** (can read and comment)
+- Admin panel for managing users (promote/demote/remove), categories, and a running activity log of who did what
+- A dashboard with site-wide stats (post/draft counts, most-viewed posts, recent signups) for admins, and a personal summary for everyone else
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Under the hood**
+- Every form submit button disables itself the instant it's clicked, so a fast double-click can't submit the same thing twice
+- A handful of custom Artisan commands (see below) for backfilling data, cleaning up orphaned records, and pruning old trash automatically
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Getting started
 
 ```bash
-composer require laravel/boost --dev
+composer install
+npm install
 
-php artisan boost:install
+cp .env.example .env
+php artisan key:generate
+
+php artisan migrate
+php artisan db:seed          # optional — see "Seeded accounts" below
+
+php artisan storage:link     # needed for locally-uploaded featured images to be publicly reachable
+
+npm run dev                  # or: npm run build, for a production build
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Seeded accounts
 
-## Contributing
+Running `php artisan db:seed` creates two known accounts (plus 20 random users) so you have something to log in with locally:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Role   | Email               | Password    |
+|--------|---------------------|-------------|
+| admin  | admin@example.com   | admin12345  |
+| editor | editor@example.com  | *(random — use "Forgot password" or reset it via tinker)* |
 
-## Code of Conduct
+These are for local development only — don't seed them into a real deployment.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Custom Artisan commands
 
-## Security Vulnerabilities
+| Command | What it does |
+|---|---|
+| `posts:backfill-defaults` | Fills in missing `category_id`, `featured_image`, and `views` on existing posts (random category, a stock photo URL, and a random view count). Supports `--dry-run` and `--only=category\|image\|views`. |
+| `comments:prune-orphaned` | Deletes comments left behind by a post/video that no longer exists. Supports `--dry-run` and `--force`. |
+| `posts:prune-trashed` | Permanently deletes posts that have been in the trash for 30+ days (configurable with `--days=N`). Supports `--dry-run` and `--force`. Runs automatically once a day via the scheduler in `routes/console.php` — that only takes effect if something is actually invoking `php artisan schedule:run` every minute (`php artisan schedule:work` while developing locally, or a real cron / Task Scheduler entry in production). |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Testing
 
-## License
+```bash
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Good to know
+
+A couple of things exist in the codebase but aren't wired up to anything yet — not bugs, just unfinished:
+
+- **Tags**: the `Tag` model and `post_tag` pivot table are there, but there's no UI yet to actually tag a post or browse by tag.
+- **Videos**: a full `Video` model exists (title, url, description) and can already take comments via the same polymorphic relation posts use, but it has no controller, routes, or views — it's set up as a second content type that was started and never finished.
